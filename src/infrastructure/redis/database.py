@@ -8,13 +8,11 @@ redis_port = config("REDIS_PORT")
 redis_user = config("REDIS_USER")
 redis_password = config("REDIS_PASSWORD")
 
-r = redis.Redis(
+redis_db = redis.Redis(
     host=redis_url,
     port=redis_port,
-    username=redis_user,
-    password=redis_password,
     )
 
 
-def get_session():
-    return r
+def get_redis_db():
+    return redis_db

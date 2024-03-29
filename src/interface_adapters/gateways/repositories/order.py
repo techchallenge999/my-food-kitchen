@@ -37,7 +37,7 @@ class OrderRepositoryInterface(RepositoryInterface):
 
     @abstractmethod
     def list(
-        self, filters: dict = {}, exclusive_filters: dict = {}
+        self,
     ) -> list[OrderRepositoryDto]:
         pass
 

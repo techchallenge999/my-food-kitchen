@@ -1,12 +1,9 @@
 from src.interface_adapters.gateways.authorization_microservice import (
     AuthorizationOutputDto,
 )
+from src.interface_adapters.gateways.interface.sns import SNSInterface
 from src.interface_adapters.gateways.order_parser import CreateOrderParser
 from src.interface_adapters.gateways.repositories.order import OrderRepositoryInterface
-from src.interface_adapters.gateways.repositories.product import (
-    ProductRepositoryInterface,
-)
-from src.interface_adapters.gateways.repositories.user import UserRepositoryInterface
 from src.use_cases.order.create.create_order import CreateOrderUseCase
 from src.use_cases.order.create.create_order_dto import (
     CreateOrderInputDto,
@@ -39,12 +36,10 @@ class OrderController:
         self,
         input_data: CreateOrderInputDto,
         create_order_parser: CreateOrderParser,
-        product_repository: ProductRepositoryInterface,
-        user_repository: UserRepositoryInterface,
         current_user: AuthorizationOutputDto,
     ) -> CreateOrderOutputDto:
         create_use_case = CreateOrderUseCase(
-            self.repository, product_repository, user_repository
+            self.repository,
         )
         new_order = create_use_case.execute(
             create_order_parser.get_order_input_dto(input_data, current_user)
@@ -63,13 +58,9 @@ class OrderController:
         self,
         order_uuid: str,
         input_data: UpdateOrderItemsInputDto,
-        product_repository: ProductRepositoryInterface,
-        user_repository: UserRepositoryInterface,
     ) -> UpdateOrderOutputDto:
         update_use_case = UpdateOrderUseCase(
             self.repository,
-            product_repository,
-            user_repository,
             FindOrderUseCase(self.repository),
         )
         order = update_use_case.update_order_items(order_uuid, input_data)
@@ -78,31 +69,13 @@ class OrderController:
     def progress_order_status(
         self,
         order_uuid: str,
-        product_repository: ProductRepositoryInterface,
-        user_repository: UserRepositoryInterface,
+        sns_usecase: SNSInterface,
     ) -> UpdateOrderOutputDto:
         update_use_case = UpdateOrderUseCase(
             self.repository,
-            product_repository,
-            user_repository,
             FindOrderUseCase(self.repository),
         )
-        order = update_use_case.progress_status(order_uuid)
-        return order
-
-    def cancel_order(
-        self,
-        order_uuid: str,
-        product_repository: ProductRepositoryInterface,
-        user_repository: UserRepositoryInterface,
-    ) -> UpdateOrderOutputDto:
-        update_use_case = UpdateOrderUseCase(
-            self.repository,
-            product_repository,
-            user_repository,
-            FindOrderUseCase(self.repository),
-        )
-        order = update_use_case.cancel(order_uuid)
+        order = update_use_case.progress_status(order_uuid, sns_usecase)
         return order
 
     def delete_order(self, order_uuid: str) -> DeleteOrderOutputDto:

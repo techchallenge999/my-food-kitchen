@@ -1,6 +1,5 @@
 from dataclasses import asdict
 
-from src.domain.aggregates.order.value_objects.order_status import OrderStatus
 from src.interface_adapters.gateways.repositories.order import (
     OrderRepositoryInterface,
 )
@@ -15,14 +14,7 @@ class ListOrderUseCase:
         self._repository = repository
 
     def execute(self) -> list[ListOrderOutputDto]:
-        exclusive_filters = {
-            "status": [
-                OrderStatus.PENDING_PAYMENT,
-                OrderStatus.CANCELED,
-                OrderStatus.WITHDRAWN,
-            ]
-        }
-        order_list = self._repository.list(exclusive_filters=exclusive_filters)
+        order_list = self._repository.list()
 
         if order_list is None:
             return []
