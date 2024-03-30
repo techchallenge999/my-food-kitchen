@@ -7,5 +7,5 @@ class SQSInterface(ABC):
         self.queue_url = queue_url
 
     @abstractmethod
-    async def sqs_listener(self):
+    def sqs_listener(self):
         pass

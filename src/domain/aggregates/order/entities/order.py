@@ -16,7 +16,7 @@ class Order(OrderInterface):
         order_repository: OrderRepositoryInterface,
         total_amount:str,
         uuid: UUID,
-        status: OrderStatus = OrderStatus.PENDING_PAYMENT,
+        status: OrderStatus = OrderStatus.PREPARING,
         user_uuid: UUID | None = None,
     ):
         self._items = items
@@ -25,7 +25,7 @@ class Order(OrderInterface):
         self._user_uuid = user_uuid
         self._uuid = uuid
         self._validator = OrderValidator(
-            self, order_repository
+            self
         )
         self.validator.validate()
 

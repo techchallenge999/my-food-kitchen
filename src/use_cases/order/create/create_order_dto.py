@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 
 from src.domain.aggregates.order.value_objects.order_status import OrderStatus
 
@@ -20,6 +20,7 @@ class CreateOrderItemOutputDto:
 @dataclass
 class CreateOrderInputDto:
     items: list[CreateOrderItemInputDto]
+    total_amount:str
     user_uuid: str | None = None
 
 
@@ -30,3 +31,13 @@ class CreateOrderOutputDto:
     total_amount: str
     user_uuid: str | None
     uuid: str
+
+    def __iter__(self):
+        return {
+            **self,
+            "items":[
+                asdict(item) for item in self.items
+            ]
+        }
+
+

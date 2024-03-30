@@ -19,3 +19,8 @@ class InvalidOrderStatusException(DomainException):
 class OrderStatusProgressionNotAllowedException(DomainException):
     def __init__(self, message="Order status progression not allowed."):
         super().__init__(message)
+
+
+class OrderItemInvalidQtyException(DomainException):
+    def __init__(self, message="Order item quantity should be greater than zero."):
+        super().__init__(message)

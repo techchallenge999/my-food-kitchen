@@ -10,7 +10,8 @@ from src.use_cases.order.create.create_order_dto import CreateOrderInputDto, Cre
 
 class SQSUseCase(SQSInterface):
 
-    async def sqs_listener(self, create_order_usecase:CreateOrderUseCase):
+    def sqs_listener(self, create_order_usecase:CreateOrderUseCase):
+        print("*"*50)
         response = self.sqs_connector.receive_message(
             QueueUrl=self.queue_url,
             MaxNumberOfMessages=1,
@@ -23,11 +24,14 @@ class SQSUseCase(SQSInterface):
 
                 create_order_usecase.execute(
                     CreateOrderInputDto(
-                        items=CreateOrderItemInputDto(
-                            comment=message_body["comment"],
-                            product_uuid=message_body["product_uuid"],
-                            quantity=message_body["quantity"],
-                        ),
+                        items=[
+                            CreateOrderItemInputDto(
+                                comment=item["comment"],
+                                product_uuid=item["product_uuid"],
+                                quantity=item["quantity"],
+                            ) for item in message_body["items"]
+                        ],
+                        total_amount=message_body.get("total_amount", 10),
                         user_uuid=message_body["user_uuid"],
                     )
                 )

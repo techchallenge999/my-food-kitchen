@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, status as status_code, Depends, BackgroundTasks
+from fastapi import APIRouter, HTTPException, status as status_code, BackgroundTasks
 
 from src.domain.shared.exceptions.base import DomainException
 
@@ -25,6 +25,19 @@ from src.use_cases.sqs.sqs import SQSUseCase
 router = APIRouter()
 
 
+
+def listen_create_queue(background_tasks: BackgroundTasks):
+    try:
+        print("-"*20)
+        sqs_usecase = SQSUseCase(sqs, sqs_url)
+        sqs_usecase.sqs_listener(CreateOrderUseCase(OrderRepository()))
+
+    except DomainException as err:
+        raise HTTPException(
+            status_code=status_code.HTTP_400_BAD_REQUEST,
+            detail=err.message,
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 @router.get("/", status_code=200, response_model=list[ListOrderOutputDto])
 async def list_orders():
@@ -103,16 +116,3 @@ async def delete_order(order_uuid: str):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-@router.on_event("startup")
-async def listen_create_queue():
-    try:
-        background_tasks = BackgroundTasks()
-        sqs_usecase = SQSUseCase(sqs, sqs_url)
-        background_tasks.add_task(sqs_usecase.sqs_listener, CreateOrderUseCase())
-
-    except DomainException as err:
-        raise HTTPException(
-            status_code=status_code.HTTP_400_BAD_REQUEST,
-            detail=err.message,
-            headers={"WWW-Authenticate": "Bearer"},
-        )

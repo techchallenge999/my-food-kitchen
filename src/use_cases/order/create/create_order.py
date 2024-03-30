@@ -29,6 +29,7 @@ class CreateOrderUseCase:
             ],
             order_repository=self._order_repository,
             uuid=uuid4(),
+            total_amount=input_data.total_amount,
             user_uuid=UUID(input_data.user_uuid)
             if isinstance(input_data.user_uuid, str)
             else None,

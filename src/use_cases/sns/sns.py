@@ -4,7 +4,7 @@ import json
 from typing import Dict
 from fastapi import HTTPException
 
-from src.interface_adapters.gateways.sns_interface import SNSInterface
+from src.interface_adapters.gateways.interface.sns import SNSInterface
 
 
 

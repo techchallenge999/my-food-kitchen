@@ -1,5 +1,5 @@
 from src.domain.aggregates.order.interfaces.order_item import OrderItemInterface
-from src.domain.shared.exceptions.product import InvalidProductQuantityException
+from src.domain.shared.exceptions.order import OrderItemInvalidQtyException
 from src.domain.shared.interfaces.validator import ValidatorInterface
 
 
@@ -15,7 +15,7 @@ class OrderItemValidator(ValidatorInterface):
 
     def _raise_if_has_invalid_quantity(self) -> None:
         if self._has_invalid_quantity():
-            raise InvalidProductQuantityException()
+            raise OrderItemInvalidQtyException()
 
     def _has_invalid_quantity(self) -> bool:
         return self._order_item.quantity <= 0
